@@ -1252,12 +1252,6 @@ require('bqf').setup({
     'glacambre/firenvim',
     run = function() vim.fn['firenvim#install'](0) end
 },
-  { 'bennypowers/nvim-regexplainer',
-      config = function() require'regexplainer'.setup() end,
-      requires = {
-        'nvim-treesitter/nvim-treesitter',
-        'MunifTanjim/nui.nvim',
-      } },
   {
   'filipdutescu/renamer.nvim',
   branch = 'master',
@@ -1282,79 +1276,6 @@ require('bqf').setup({
    end
 },
   {'edluffy/specs.nvim'},
-  {"haringsrob/nvim_context_vt",
-   config = function()
-       require('nvim_context_vt').setup({
-  -- Enable by default. You can disable and use :NvimContextVtToggle to maually enable.
-  -- Default: true
-  enabled = true,
-
-  -- Override default virtual text prefix
-  -- Default: '-->'
-  prefix = '',
-
-  -- Override the internal highlight group name
-  -- Default: 'ContextVt'
-  highlight = 'CustomContextVt',
-
-  -- Disable virtual text for given filetypes
-  -- Default: { 'markdown' }
-  disable_ft = { 'markdown' },
-
-  -- Disable display of virtual text below blocks for indentation based languages like Python
-  -- Default: false
-  disable_virtual_lines = false,
-
-  -- Same as above but only for spesific filetypes
-  -- Default: {}
-  disable_virtual_lines_ft = { 'yaml' },
-
-  -- How many lines required after starting position to show virtual text
-  -- Default: 1 (equals two lines total)
-  min_rows = 1,
-
-  -- Same as above but only for spesific filetypes
-  -- Default: {}
-  min_rows_ft = {},
-
-  -- Custom virtual text node parser callback
-  -- Default: nil
-  custom_parser = function(node, ft, opts)
-    local utils = require('nvim_context_vt.utils')
-
-    -- If you return `nil`, no virtual text will be displayed.
-    if node:type() == 'function' then
-      return nil
-    end
-
-    -- This is the standard text
-    return '--> ' .. utils.get_node_text(node)[1]
-  end,
-
-  -- Custom node validator callback
-  -- Default: nil
-  custom_validator = function(node, ft, opts)
-    -- Internally a node is matched against min_rows and configured targets
-    local default_validator = require('nvim_context_vt.utils').default_validator
-    if default_validator(node, ft) then
-      -- Custom behaviour after using the internal validator
-      if node:type() == 'function' then
-        return false
-      end
-    end
-
-    return true
-  end,
-
-  -- Custom node virtual text resolver callback
-  -- Default: nil
-  custom_resolver = function(nodes, ft, opts)
-    -- By default the last node is used
-    return nodes[#nodes]
-  end,
-})
-   end
-  },
   {'sbdchd/neoformat'},
   {
   "NTBBloodbath/rest.nvim",
@@ -1436,14 +1357,12 @@ require("presence"):setup({
 }
   end
   },
-   {
-  'gelguy/wilder.nvim',
+   { 'gelguy/wilder.nvim',
   config = function()
     -- config goes here
   end,
 },
-  {
-  'rmagatti/auto-session',
+  { 'rmagatti/auto-session',
   config = function()
     require('auto-session').setup {
       log_level = 'info',
@@ -1453,8 +1372,7 @@ require("presence"):setup({
 },
 { "rcarriga/vim-ultest", requires = {"vim-test/vim-test"}, run = ":UpdateRemotePlugins" },
   {"vim-test/vim-test"},
-  {
-  'chipsenkbeil/distant.nvim',
+  { 'chipsenkbeil/distant.nvim',
   config = function()
     require('distant').setup {
       -- Applies Chip's personal settings to every machine you connect to
@@ -1464,8 +1382,7 @@ require("presence"):setup({
       -- 3. Provides keybinding to jump into a remote file's parent directory
       ['*'] = require('distant.settings').chip_default()
     }
-  end
-},
+  end },
 { "beauwilliams/focus.nvim", config = function() require("focus").setup() end },
   {'sindrets/winshift.nvim'},
   {"hkupty/nvimux"},
@@ -1581,6 +1498,147 @@ table.insert(require('command_palette').CpMenu,
     { "toggle breakpoint", ":lua require'dap'.toggle_breakpoint()" },
   })
 
+  end
+  },
+
+{ 'RRethy/nvim-treesitter-textsubjects',
+  config = function()
+  require('nvim-treesitter.configs').setup {
+    textsubjects = {
+        enable = true,
+        prev_selection = ',', -- (Optional) keymap to select the previous selection
+        keymaps = {
+            ['.'] = 'textsubjects-smart',
+            [';'] = 'textsubjects-container-outer',
+            ['i;'] = 'textsubjects-container-inner',
+        },
+    },
+}
+  end
+  },
+  {"RRethy/nvim-treesitter-endwise",
+  config = function()
+      require('nvim-treesitter.configs').setup {
+    endwise = {
+        enable = true,
+    },
+}
+  end
+  },
+
+  {'nvim-treesitter/nvim-treesitter-textobjects',
+  config = function()
+      require'nvim-treesitter.configs'.setup {
+  textobjects = {
+    select = {
+      enable = true,
+
+      -- Automatically jump forward to textobj, similar to targets.vim
+      lookahead = true,
+
+      keymaps = {
+        -- You can use the capture groups defined in textobjects.scm
+        ["af"] = "@function.outer",
+        ["if"] = "@function.inner",
+        ["ac"] = "@class.outer",
+        ["ic"] = "@class.inner",
+      },
+    },
+  },
+}
+  end
+  },
+  {"mfussenegger/nvim-ts-hint-textobject",
+  config = function()
+      require("tsht").config.hint_keys = { "h", "j", "f", "d", "n", "v", "s", "l", "a" }
+  end
+  },
+  -- Lua
+  { "nvim-telescope/telescope-file-browser.nvim" ,
+  config = function()
+      -- You don't need to set any of these options.
+-- IMPORTANT!: this is only a showcase of how you can set default options!
+require("telescope").setup {
+  extensions = {
+    file_browser = {
+      theme = "ivy",
+      mappings = {
+        ["i"] = {
+          -- your custom insert mode mappings
+        },
+        ["n"] = {
+          -- your custom normal mode mappings
+        },
+      },
+    },
+  },
+}
+-- To get telescope-file-browser loaded and working with telescope,
+-- you need to call load_extension, somewhere after setup function:
+require("telescope").load_extension "file_browser"
+  end
+  },
+   {"nvim-telescope/telescope-github.nvim" ,
+    requires = {
+        { "nvim-lua/plenary.nvim" },
+    },
+    config = function()
+        require('telescope').load_extension('gh')
+    end
+},
+  {
+  "nvim-telescope/telescope-frecency.nvim",
+  config = function()
+    require"telescope".load_extension("frecency")
+      require('telescope').setup {
+  extensions = {
+    frecency = {
+      db_root = "home/my_username/path/to/db_root",
+      show_scores = false,
+      show_unindexed = true,
+      ignore_patterns = {"*.git/*", "*/tmp/*"},
+      disable_devicons = false,
+      workspaces = {
+        ["conf"]    = "/home/my_username/.config",
+        ["data"]    = "/home/my_username/.local/share",
+        ["project"] = "/home/my_username/projects",
+        ["wiki"]    = "/home/my_username/wiki"
+      }
+    }
+  },
+}
+  end,
+  requires = {"tami5/sqlite.lua"}
+},
+{'nvim-telescope/telescope-ui-select.nvim' ,
+  config = function()
+      -- This is your opts table
+require("telescope").setup {
+  extensions = {
+    ["ui-select"] = {
+      require("telescope.themes").get_dropdown {
+        -- even more opts
+      }
+
+      -- pseudo code / specification for writing custom displays, like the one
+      -- for "codeactions"
+      -- specific_opts = {
+      --   [kind] = {
+      --     make_indexed = function(items) -> indexed_items, width,
+      --     make_displayer = function(widths) -> displayer
+      --     make_display = function(displayer) -> function(e)
+      --     make_ordinal = function(e) -> string
+      --   },
+      --   -- for example to disable the custom builtin "codeactions" display
+      --      do the following
+      --   codeactions = false,
+      -- }
+    }
+  }
+}
+-- To get ui-select loaded and working with telescope, you need to call
+-- load_extension, somewhere after setup function:
+require("telescope").load_extension("ui-select")
   end
   },
 
