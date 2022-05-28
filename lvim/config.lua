@@ -1419,6 +1419,24 @@ lvim.plugins = {
       }
     end
   },
+  {"Shatur/neovim-session-manager",
+config = function
+  local Path = require('plenary.path')
+  require('session_manager').setup({
+    sessions_dir = Path:new(vim.fn.stdpath('data'), 'sessions'), -- The directory where the session files will be saved.
+    path_replacer = '__', -- The character to which the path separator will be replaced for session files.
+    colon_replacer = '++', -- The character to which the colon symbol will be replaced for session files.
+    autoload_mode = require('session_manager.config').AutoloadMode.LastSession, -- Define what to do when Neovim is started without arguments. Possible values: Disabled, CurrentDir, LastSession
+    autosave_last_session = true, -- Automatically save last session on exit and on session switch.
+    autosave_ignore_not_normal = true, -- Plugin will not save a session when no buffers are opened, or all of them aren't writable or listed.
+    autosave_ignore_filetypes = { -- All buffers of these file types will be closed before the session is saved.
+      'gitcommit',
+    }, 
+    autosave_only_in_session = false, -- Always autosaves session. If true, only autosaves after a session is active.
+    max_path_length = 80,  -- Shorten the display path if length exceeds this threshold. Use 0 if don't want to shorten the path at all.
+  })
+end
+},
   { "rcarriga/vim-ultest", requires = { "vim-test/vim-test" }, run = ":UpdateRemotePlugins" },
   { "vim-test/vim-test" },
   { 'chipsenkbeil/distant.nvim',
@@ -1694,6 +1712,197 @@ lvim.plugins = {
 
 },
   {'dinhhuy258/vim-local-history'},
+  {'Pocco81/AutoSave.nvim',
+config = function()
+  local autosave = require("autosave")
+
+autosave.setup(
+    {
+        enabled = true,
+        execution_message = "AutoSave: saved at " .. vim.fn.strftime("%H:%M:%S"),
+        events = {"InsertLeave", "TextChanged"},
+        conditions = {
+            exists = true,
+            filename_is_not = {},
+            filetype_is_not = {},
+            modifiable = true
+        },
+        write_all_buffers = false,
+        on_off_commands = true,
+        clean_command_line_interval = 0,
+        debounce_delay = 135
+    }
+  end
+)
+},
+{'mrjones2014/legendary.nvim',
+config = function()
+  require('legendary').setup({
+    -- Include builtins by default, set to false to disable
+    include_builtin = true,
+    -- Include the commands that legendary.nvim creates itself
+    -- in the legend by default, set to false to disable
+    include_legendary_cmds = true,
+    -- Customize the prompt that appears on your vim.ui.select() handler
+    -- Can be a string or a function that takes the `kind` and returns
+    -- a string. See "Item Kinds" below for details. By default,
+    -- prompt is 'Legendary' when searching all items,
+    -- 'Legendary Keymaps' when searching keymaps,
+    -- 'Legendary Commands' when searching commands,
+    -- and 'Legendary Autocmds' when searching autocmds.
+    select_prompt = nil,
+    -- Optionally pass a custom formatter function. This function
+    -- receives the item as a parameter and must return a table of
+    -- non-nil string values for display. It must return the same
+    -- number of values for each item to work correctly.
+    -- The values will be used as column values when formatted.
+    -- See function `get_default_format_values(item)` in
+    -- `lua/legendary/formatter.lua` to see default implementation.
+    formatter = nil,
+    -- When you trigger an item via legendary.nvim,
+    -- show it at the top next time you use legendary.nvim
+    most_recent_item_at_top = true,
+    -- Initial keymaps to bind
+    keymaps = {
+      -- your keymap tables here
+    },
+    -- Initial commands to bind
+    commands = {
+      -- your command tables here
+    },
+    -- Initial augroups and autocmds to bind
+    autocmds = {
+      -- your autocmd tables here
+    },
+    which_key = {
+      -- you can put which-key.nvim tables here,
+      -- or alternatively have them auto-register,
+      -- see section on which-key integration
+      mappings = {},
+      opts = {},
+      -- controls whether legendary.nvim actually binds they keymaps,
+      -- or if you want to let which-key.nvim handle the bindings.
+      -- if not passed, true by default
+      do_binding = {},
+    },
+    -- Automatically add which-key tables to legendary
+    -- see "which-key.nvim Integration" below for more details
+    auto_register_which_key = true,
+    -- settings for the :LegendaryScratch command
+    scratchpad = {
+      -- configure how to show results of evaluated Lua code,
+      -- either 'print' or 'float'
+      -- Pressing q or <ESC> will close the float
+      display_results = 'float',
+    },
+  })
+  -- automatically register which-key.nvim tables with legendary.nvim
+-- when you register them with which-key.nvim.
+-- `setup()` must be called before `require('which-key).register()`
+require('legendary').setup()
+-- now this will register them with both which-key.nvim and legendary.nvim
+require('which-key').register(your_which_key_tables, your_which_key_opts)
+
+-- or, pass them through setup() directly
+require('legendary').setup({
+  which_key = {
+    mappings = your_which_key_tables,
+    opts = your_which_key_opts,
+    -- false if which-key.nvim handles binding them,
+    -- set to true if you want legendary.nvim to handle binding
+    -- the mappings; if not passed, true by default
+    do_binding = false,
+  },
+})
+
+-- or, if you'd prefer to manually register with legendary.nvim
+require('legendary').setup({ auto_register_which_key = false })
+require('which-key').register(your_which_key_tables, your_which_key_opts)
+require('legendary').bind_whichkey(
+  your_which_key_tables,
+  your_which_key_opts,
+  -- false if which-key.nvim handles binding them,
+  -- set to true if you want legendary.nvim to handle binding
+  -- the mappings; if not passed, true by default
+  false,
+)
+},
+{"embear/vim-localvimrc"},
+{"mfussenegger/nvim-dap"},
+{"theHamsta/nvim-dap-virtual-text",
+config = function()
+
+  require("nvim-dap-virtual-text").setup {
+    enabled = true,                        -- enable this plugin (the default)
+    enabled_commands = true,               -- create commands DapVirtualTextEnable, DapVirtualTextDisable, DapVirtualTextToggle, (DapVirtualTextForceRefresh for refreshing when debug adapter did not notify its termination)
+    highlight_changed_variables = true,    -- highlight changed values with NvimDapVirtualTextChanged, else always NvimDapVirtualText
+    highlight_new_as_changed = false,      -- highlight new variables in the same way as changed variables (if highlight_changed_variables)
+    show_stop_reason = true,               -- show stop reason when stopped for exceptions
+    commented = false,                     -- prefix virtual text with comment string
+    only_first_definition = true,          -- only show virtual text at first definition (if there are multiple)
+    all_references = false,                -- show virtual text on all all references of the variable (not only definitions)
+    filter_references_pattern = '<module', -- filter references (not definitions) pattern when all_references is activated (Lua gmatch pattern, default filters out Python modules)
+    -- experimental features:
+    virt_text_pos = 'eol',                 -- position of virtual text, see `:h nvim_buf_set_extmark()`
+    all_frames = false,                    -- show virtual text for all stack frames not only current. Only works for debugpy on my machine.
+    virt_lines = false,                    -- show virtual lines instead of virtual text (will flicker!)
+    virt_text_win_col = nil                -- position the virtual text at a fixed window column (starting from the first text column) ,
+                                           -- e.g. 80 to position at column 80, see `:h nvim_buf_set_extmark()`
+}
+end
+},
+{"rcarriga/nvim-dap-ui",
+config = function
+  require("dapui").setup({
+    icons = { expanded = "▾", collapsed = "▸" },
+    mappings = {
+      -- Use a table to apply multiple mappings
+      expand = { "<CR>", "<2-LeftMouse>" },
+      open = "o",
+      remove = "d",
+      edit = "e",
+      repl = "r",
+      toggle = "t",
+    },
+    -- Expand lines larger than the window
+    -- Requires >= 0.7
+    expand_lines = vim.fn.has("nvim-0.7"),
+    sidebar = {
+      -- You can change the order of elements in the sidebar
+      elements = {
+        -- Provide as ID strings or tables with "id" and "size" keys
+        {
+          id = "scopes",
+          size = 0.25, -- Can be float or integer > 1
+        },
+        { id = "breakpoints", size = 0.25 },
+        { id = "stacks", size = 0.25 },
+        { id = "watches", size = 00.25 },
+      },
+      size = 40,
+      position = "left", -- Can be "left", "right", "top", "bottom"
+    },
+    tray = {
+      elements = { "repl" },
+      size = 10,
+      position = "bottom", -- Can be "left", "right", "top", "bottom"
+    },
+    floating = {
+      max_height = nil, -- These can be integers or a float between 0 and 1.
+      max_width = nil, -- Floats will be treated as percentage of your screen.
+      border = "single", -- Border style. Can be "single", "double" or "rounded"
+      mappings = {
+        close = { "q", "<Esc>" },
+      },
+    },
+    windows = { indent = 1 },
+    render = { 
+      max_type_length = nil, -- Can be integer or nil.
+    }
+  })
+end
+},
+{"nvim-telescope/telescope-dap.nvim"},
 
 }
 
