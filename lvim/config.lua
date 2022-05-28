@@ -1420,7 +1420,7 @@ lvim.plugins = {
     end
   },
   {"Shatur/neovim-session-manager",
-config = function
+config = function ()
   local Path = require('plenary.path')
   require('session_manager').setup({
     sessions_dir = Path:new(vim.fn.stdpath('data'), 'sessions'), -- The directory where the session files will be saved.
@@ -1732,8 +1732,8 @@ autosave.setup(
         clean_command_line_interval = 0,
         debounce_delay = 135
     }
-  end
 )
+end
 },
 {'mrjones2014/legendary.nvim',
 config = function()
@@ -1818,17 +1818,17 @@ require('legendary').setup({
 -- or, if you'd prefer to manually register with legendary.nvim
 require('legendary').setup({ auto_register_which_key = false })
 require('which-key').register(your_which_key_tables, your_which_key_opts)
-require('legendary').bind_whichkey(
+require('legendary').bind_whichkey({
   your_which_key_tables,
   your_which_key_opts,
   -- false if which-key.nvim handles binding them,
   -- set to true if you want legendary.nvim to handle binding
   -- the mappings; if not passed, true by default
   false,
-)
+})
+end
 },
 {"embear/vim-localvimrc"},
-{"mfussenegger/nvim-dap"},
 {"theHamsta/nvim-dap-virtual-text",
 config = function()
 
@@ -1852,7 +1852,7 @@ config = function()
 end
 },
 {"rcarriga/nvim-dap-ui",
-config = function
+config = function ()
   require("dapui").setup({
     icons = { expanded = "▾", collapsed = "▸" },
     mappings = {
